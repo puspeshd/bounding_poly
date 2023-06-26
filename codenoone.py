@@ -52,22 +52,31 @@ def get_word_bounding_vertices(image_path):
 
 
 # Provide the path to your image file
-image_path = 'cheque2.jpeg'
+image_path = 'newaadharfortest.jpg'
 
 line_wise_vertices = get_word_bounding_vertices(image_path)
 
 # Print the word bounding vertices line-wise
-i=0
-listfin=[]
+i = 0
+listfin = []
 
-while i<len(line_wise_vertices):
-    strtemp=''
-    strtemp=strtemp+line_wise_vertices[i][1]
-    if(line_wise_vertices[i][0][0][1]==line_wise_vertices[i+1][0][0][1]):
-        strtemp=strtemp+line_wise_vertices[i+1][1]
-        listfin.append(str(line_wise_vertices[i][0])+" "+strtemp+"\n")
-        i=i+2
-        continue
-    i=i+1
-logging.info(f"{listfin}")    
-print(listfin)        
+while i < len(line_wise_vertices):
+    x = line_wise_vertices[i][0][0][1]
+    list1 = []
+
+    for j in range(i, len(line_wise_vertices)):
+        if line_wise_vertices[j][0][0][1] == x or line_wise_vertices[j][0][0][1]-x==1 or line_wise_vertices[j][0][0][1]-x==-1:
+            list1.append({"desc":line_wise_vertices[j][1],"vertices":line_wise_vertices[j][0]})
+            
+        else:
+            break
+        i = j + 1 
+    listfin.append(list1)
+    
+for ii in listfin:
+    print("TOTAL WORDS IN LINE =",len(ii))
+    for i in range(len(ii)):
+        
+        print(ii[i]["desc"],end=" ")
+    print("\r")       
+

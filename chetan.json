@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "bluealgo-leadautoconvert",
+  "private_key_id": "e85e0b3a1e2a3ada8ea6443b3b9b7fc3e9bcea94",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC2oiqsFVpI5YtM\n+cILyXmFjDT/kGtv9k3Jukh7IWELnIZ/Rtgzx0K7uoFzje+/kQecmNZTNZIUNUrl\nZC/9JwK0NfEq/Z1CYP6fP112WqmkzJN+XlU9HbdTFd+jyf7IdFIIco4IZxgV1jKt\n3+dOoAFJJg5iAs1jTY679A9ON/Z0fPB0sbuasRPP8p9Az6w9ChGvuRnW0dK2tm9F\nMo5COn0e+GTYtbEaqyBZxC9bw62yNRJw++5jfEAdKidCyvRig7QMm8XvD6/9OAvr\n6MB+xvF8+2j4wMzpJv9H5hwp85rjA1qJ+AK1UkH/+84fezyBRnxJj7VGzC5CMPDB\nEJgimLCDAgMBAAECggEABkKVjXbhGvgprjNhbPk0kSW2xPI0vI6H9aiZxp6xe0eb\n1JqfdPOywq/B5pQW6hoU7xxnorKGlbeKuavIrIS8/8nzJxlKXdwbqwAhBzPt9ktZ\nqU5sEL9tnHHdGJNaVSsN8ZXIbvSAGHK4vTA19xv4IoNYOt1qhnZ1TgjJMLhgwKos\nDa1My9GdsJgcsRbBAe2ZeGaPlqn/lAz28OFayXF9lzXEgohUxZhEQFK2zRpAGnpf\nKf8uwC2XsUySVUWoyTULORac18cnwIsWwCNudPWdHyznxLtL7yRHIxZA70ogK+mh\n03Yl2SWlP2buSjkHtdDX2lAcKwC5jQW3FUl4ZALHAQKBgQDaQMKDm98r90k5i7RS\nd2a96OLOVMGP2L6zTURGI50Hp4kU0C22zPEELOkZAfD/oca3SRZGBOdhLQywATfk\nGP/10WcD/V5f0u5Q5IUAYgZh0TeLop1JilFUBMLGCxPosoTLJIWHOO7MmEOlnYiq\nuiUegEkBpPN1SrtFe5/17aX6rQKBgQDWOFavqarlaAvNrz58J+TDaXo3ZxRKYgIm\nssqsRJm9aNRzMKP0Vy5pmdQTdFL/k50Hg0DsRXifnHvd4jaofBYzgQOUiyD02V8k\n9oxjn5ICufBK6pNkRxtV0ahZIrgCGAnCDWG9kmrvXB7k6WjeIDrLYBKLWIlvMeQP\nwtL+wYht7wKBgGz7S2XWbpEQsQLILOnE74vC/4YSMnk2vLrhyUbQv7ezw7Kd5UXT\nfkIcfuTa4FF1obmiCDo8dqFCkoRMh3EhvqYrwynt2bM1q4S/J16ylAdCJl9Wev3e\n0I+ItQ2ZOH7IraCWgwqrtip5mcXYLQc7Xg+l9U6Z5GvcPjkK6ywtV+UdAoGALfey\n6kjfKhD0j3NuVhf9Z81Hc4IEAZ4cVg+BnAuwbcuD4x/p3rGifPiMYIxSjxMu3ADX\nOpwBsUZT8h3rmqXd4blqekKMlN3cI8NgBrSkET+zB3Bkplz3yaeOl2ny0Eg2N9TF\nR3eWyLwcyQQpA5ko5KE9+XbLLvgmtxcYTaBb1TMCgYEAhFaCsRaVe0vSzkktpi/a\nIJYtGFPx6uVv6enR30E59EGLh2Wr7xHxM/YNZtbP8xVqc/xsrWEAbeutATwHZsDL\nRXWyyhbwTSQkIj3N6VMD+hjYVgh/W+4NT9ud+1lsmXWn/QXACe6nDeZdcJV9E4Ou\nKjwrg0ZYvB9vEVpzOOKni8k=\n-----END PRIVATE KEY-----\n",
+  "client_email": "dataextractionapi@bluealgo-leadautoconvert.iam.gserviceaccount.com",
+  "client_id": "100225729783238658128",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/dataextractionapi%40bluealgo-leadautoconvert.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
