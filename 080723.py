@@ -39,14 +39,14 @@ def retsortedwords(image_path):
         annotation1 = str(annotation1).encode('utf-8')
         annotation1 = str(annotation1)
         annotation1 = annotation1.replace("\\", "")
-        annotation1 = annotation1.replace("|", "")
-        annotation1 = annotation1.replace("/", " ")
-        annotation1 = annotation1.replace("'\*", " ")
+        #annotation1 = annotation1.replace("|", "")
+        #annotation1 = annotation1.replace("/", " ")
+        #annotation1 = annotation1.replace("'\*", " ")
         annotation1 = annotation1.replace("'", "")
         annotation1 = annotation1.replace("\n", " ")
         annotation1 = re.sub("x..", "", annotation1)
-        annotation1 = annotation1.replace("(", "")
-        annotation1 = annotation1.replace(")", "")
+        #annotation1 = annotation1.replace("(", "")
+        #annotation1 = annotation1.replace(")", "")
         annotation1 = list(annotation1)
         annotation1 = annotation1[1:]
         annotation1 = "".join(annotation1)
@@ -262,7 +262,7 @@ def lineswithcol(image_path,listfin):
             if(key<w//3):
                 key_col=lc_col+1
                 flag='left'
-            elif(key>w//3):
+            elif(key>w//3+w//3):
                 key_col=rc_col+1
                 flag='right'
             else:
@@ -271,7 +271,7 @@ def lineswithcol(image_path,listfin):
             for k in range(len(listfin)):
                 l=0
                 while l<len(listfin[k]):
-                 if(abs(listfin[k][l][0][0][0]-key)<10):
+                 if(abs(listfin[k][l][0][0][0]-key)<150):
                     if(len(listfin[k][l])==3): 
                         listfin[k][l].append(f" {flag}_C {key_col}  ")
                  l+=1
@@ -281,15 +281,71 @@ def lineswithcol(image_path,listfin):
                 rc_col+=1  
             elif(flag=='center'):
                 cc_col+=1           
-        i+=1         
+        i+=1  
+    i=0
+    j=0
+    lc_col=0
+    rc_col=0
+    cc_col=0
+    while i<len(listfin):
+        
+        flag=''
+        for x in listfin[i]:
+            key_l=x[0][0][0]
+            key_r=x[0][1][0]
+            key_c=(key_l+key_r)//2
+            fola=0
+            for k in range(len(listfin)):
+                l=0
+                while l<len(listfin[k]):
+                 if(abs(listfin[k][l][0][0][0]-key_l)<10):
+                    if(len(listfin[k][l])<=4): 
+                        flag="LA"
+                        listfin[k][l].append(f" {flag} {lc_col}  ")
+                        listfin[k][l].insert(5,fola)
+                        fola+=1
+                 elif(abs(listfin[k][l][0][1][0]-key_r)<10):
+                    if(len(listfin[k][l])<=4): 
+                        flag="RA"
+                        listfin[k][l].append(f" {flag} {rc_col}  ")
+                        listfin[k][l].insert(5,fola)
+                        fola+=1
+                 elif(abs((listfin[k][l][0][0][0]+listfin[k][l][0][1][0])//2-key)<10):
+                    if(len(listfin[k][l])<=4): 
+                        flag="CA"
+                        listfin[k][l].append(f" {flag} {cc_col}  ")              
+                        listfin[k][l].insert(5,fola)
+                        fola+=1
+                 l+=1
+            if(flag=='LA'):
+                lc_col+=1
+            elif(flag=='RA'):
+                rc_col+=1  
+            elif(flag=='CA'):
+                cc_col+=1           
+        i+=1
+    for i in range(len(listfin)):
+        for j in range(len(listfin[i])):
+            valu=listfin[i][j][len(listfin[i][j])-2]
+            #print(valu)
+            if(len(re.findall(valu,str(listfin))))<2:
+                       listfin[i][j][len(listfin[i][j])-2]=000
+                                
+
+
+
+    print(f"TOTAL NO OF LINES ::::: {len(listfin)}")
     for i in range(len(listfin)):
               
         for j in listfin[i]:
-         print("LINE NO "+str(i+1)+str({"pos":j[3],"word":j[1]["t_"],"type":j[2]})) 
-        print("\r")                  
-image_path="img4.jpg"
+         #print(len(j),end="\n")
+         print("LINE NO "+str(i+1)+str({"x1,x2":(j[0][0][0],j[0][1][0]),"pos":j[3],"word":j[1]["t_"],"type":j[2],"alignment":j[4]})) 
+        print("\r")     
+    return listfin                 
+image_path="cheque1.png"
 word_list_sorted=retsortedwords(image_path)
 fina_list=columnar_new(word_list_sorted)
 listfin=linemaker(word_list_sorted)
-lineswithcol(image_path,listfin)
+list_fin=lineswithcol(image_path,listfin)
+
 #columnmaker(listfin)
