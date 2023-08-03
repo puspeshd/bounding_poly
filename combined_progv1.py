@@ -502,7 +502,7 @@ def maketemplate(image_path,list_fin):
                #print({"uri":"ba_pan_no"},end=" ")
                x.write(str({"uri":"ba_pan_no"})+" ")
            try:    
-            if(list_temp[j][2]["type"]=="DIGIT" and list_temp[j+1][2]["type"]=="DIGIT" and list_temp[j+2][2]["type"]=="DIGIT" and len(list_temp)-1==j+2):
+            if(list_temp[j][2]["type"]=="DIGIT" and len(list_temp[j][1]["t_"])==4 and list_temp[j+1][2]["type"]=="DIGIT" and len(list_temp[j+1][1]["t_"])==4 and list_temp[j+2][2]["type"]=="DIGIT" and len(list_temp[j+2][1]["t_"])==4 and len(list_temp)-1==j+2):
                x.write(str({"uri":"aadhar_no"})+" ")
                #print("AADHAR NO IS ::::: ",list_temp[j][1]["t_"],list_temp[j+1][1]["t_"],list_temp[j+2][1]["t_"])
            except:
@@ -571,7 +571,10 @@ def elasticcode(image_path):
 
     #print(results)
     return results      
-
+def cheque0_template(text_list):
+    for i in text_list:
+        print(i)
+    return({"YET TO BE POPLULATED"})
                    
 def aadhar_front4_template(text_list_0):
    
