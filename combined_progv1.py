@@ -6,6 +6,7 @@ import re
 import logging
 from flask import Flask,request,render_template
 from fileinput import filename
+import words2num
 import requests
 from flask_cors import CORS,cross_origin
 import json
@@ -16,6 +17,7 @@ import numpy
 from scipy import ndimage
 import fitz
 import datetime
+from bs4 import BeautifulSoup
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'chetan.json'
 client = vision.ImageAnnotatorClient()
 
@@ -44,7 +46,7 @@ def rotate_image(word_list_sorted,image_path):
         theta=90
     else:
        theta=perp/base        
-    if(perp>0):
+    if(perp<2):
        pass
     else:     
         print(theta)
@@ -53,6 +55,7 @@ def rotate_image(word_list_sorted,image_path):
         if(y1>y2 and x1==x2):
             img=ndimage.rotate(img,-xo,reshape=True)
             print("CASE 0")
+            
         elif(y2>y1 and x1==x2):    
             img=ndimage.rotate(img,xo,reshape=True)
             print("CASE 1")
@@ -152,6 +155,9 @@ def retsortedwords2(image_path):
     # Extracts word bounding vertices
     for annotation in annotations[1:]:
         annotation1 = annotation.description
+        if(annotation1.find(u"\u20B9")>-1):
+            annotation1=annotation1.replace(u"\u20B9","Rupees")
+
         annotation1 = str(annotation1).encode('utf-8')
         annotation1 = str(annotation1)
         annotation1 = annotation1.replace("\\", "")
@@ -479,9 +485,13 @@ def maketemplate(image_path,list_fin):
    image_path[1]="txt"
    image_path=".".join(image_path)
    #print(image_path,"THIS IS TEST")
-   x=open(image_path,"w+")
+   x=x=open(image_path,"w+")
    for i in range(len(list_fin)):
        if(type(list_fin[i][0])==dict): 
+         if(len(list_fin[i])==1):
+             x.write(str(list_fin[i][0]))
+             
+             
          if(type(list_fin[i][1])==dict and list_fin[i][1]["uri"]=="ba_fathers_name"):  
            #print(list_fin[i][1],end=" ")
            x.write(str(list_fin[i][1])+" ") 
@@ -495,12 +505,16 @@ def maketemplate(image_path,list_fin):
        if(type(list_temp[0])==dict):
            #print(list_temp[0],end=" ")
            x.write(str(list_temp[0])+" ")
-           list_temp=list_temp[1:]      
+           list_temp=list_temp[1:]  
+       for i in list_temp:
+           print(i,"HOHO")        
        for j in range(len(list_temp)):
-           
-           if(list_temp[j][2]["type"]=="ALPHANUMERIC" and len(list_temp[j][1]["t_"])==10 and bool(re.search("\w\w\w\w\w\d\d\d\d\w",list_temp[j][1]["t_"]))==True):
+           try: 
+            if(list_temp[j][2]["type"]=="ALPHANUMERIC" and len(list_temp[j][1]["t_"])==10 and bool(re.search("\w\w\w\w\w\d\d\d\d\w",list_temp[j][1]["t_"]))==True):
                #print({"uri":"ba_pan_no"},end=" ")
                x.write(str({"uri":"ba_pan_no"})+" ")
+           except:
+             pass     
            try:    
             if(list_temp[j][2]["type"]=="DIGIT" and len(list_temp[j][1]["t_"])==4 and list_temp[j+1][2]["type"]=="DIGIT" and len(list_temp[j+1][1]["t_"])==4 and list_temp[j+2][2]["type"]=="DIGIT" and len(list_temp[j+2][1]["t_"])==4 and len(list_temp)-1==j+2):
                x.write(str({"uri":"aadhar_no"})+" ")
@@ -509,11 +523,11 @@ def maketemplate(image_path,list_fin):
                pass         
            #print(list_temp[j][2]["type"],"length=",len(list_temp[j][1]["t_"]),end=" ")
            #x.write(list_temp[j][2]["type"]+" length="+str(len(list_temp[j][1]["t_"]))+" ")    
-           x.write(list_temp[j][2]["type"]+" ")          
+       x.write(list_temp[j][2]["type"]+" ")          
        #print("\r")
-       x.write("\n")           
-   x.close() 
-   return [uriidentifier,list_fin]        
+       x.write("\n")
+   x.close()
+   return([uriidentifier,list_fin])
 def elasticcode(image_path):
     ### elastic search code starts here only for jpg files right now 
     #with open(image_path.replace(".jpg",".txt") ,"r") as f: #this is only for jpg right now
@@ -571,11 +585,215 @@ def elasticcode(image_path):
 
     #print(results)
     return results      
-def cheque0_template(text_list):
+
+def cheque0_template(image_path,text_list):
+    
+    img=cv2.imread(image_path)
+    h,w,_=img.shape
+    print("HERE OK 1 ",h,w)
+    
+    left_lines=[]
+    right_lines=[]
+    print("RUNNING TILL HERE a")
+    
+    
     for i in text_list:
+          if(type(i[0])==dict):
+           i.pop(0) 
+    for i in text_list:      
+          if(type(i[0])==dict):
+           i.pop(0) 
+          if(i[0][0][0][0]<w//2):
+               left_lines.append(i)
+               #print("LEFT")
+               print("RUNNING TILL HERE ab")
+          else:
+               right_lines.append(i)
+               print("RUNNING TILL HERE ac")    
+               #print("RIGHT")
+    
+    print("RUNNING TILL HERE b")
+    uriidentifier=[]
+    for i in range(len(left_lines)):
+       stro=''
+       for j in range(len(left_lines[i])):
+                        
+           #print(left_lines[i][j][1]["t_"],end=" ")
+           stro=stro+left_lines[i][j][1]["t_"]+" "
+       uriidentifier.append(stro)
+       #print("\n")
+    for i in range(len(right_lines)):
+       stro=''
+       for j in range(len(right_lines[i])):
+                        
+           #print(right_lines[i][j][1]["t_"],end=" ")
+           stro=stro+right_lines[i][j][1]["t_"]+" "
+       uriidentifier.append(stro)
+    for i in uriidentifier:
         print(i)
-    return({"YET TO BE POPLULATED"})
-                   
+    payee,amount_w,micr,chq_no,date,amount_n='','','','','',''
+    
+    ###################PAYEE LOGIC ########################################
+    for i in uriidentifier:
+        if(i.lower().find("pay ")>-1 or i.lower().find("pat ")>-1):
+            payee=i
+            if(payee.find("pay ")>-1):
+             payee=payee[payee.find("pay ")+3:]
+            elif(payee.find("pat ")>-1):
+             payee=payee[payee.find("pat ")+3:] 
+            break
+        
+    ##################AMOUNT IN WORDS LOGIC #####################################
+    for i in uriidentifier:
+        if(i.lower().find("rupees ")>-1 ):
+            amount_w=i[i.lower().find("rupees ")+6:]
+            break
+    if(amount_w.lower().find("only")>-1):
+        amount_w=amount_w[:amount_w.lower().find("only")]
+
+    ############################## AMOUNT IN NUMBERS LOGIC ##########################
+    temp_list=uriidentifier.copy()
+    temp_list=temp_list[::-1]
+    for i in temp_list:
+        if(i.find("Rupees")>-1 ):
+            amount_n=i
+            amount_n=amount_n.split()
+            y=len(amount_n)-1
+            while(y>=0):
+            
+                if(amount_n[y].isdigit()==False ):
+                    amount_n.pop(y)
+                else :  
+                   pass
+                y=y-1 
+            break
+    amount_n="".join(amount_n)    
+    ############EXTRACTION ON MICR AND CHEQUE NO ##################################
+    for i in range(len(uriidentifier)):
+        uriidentifier[i]=list(uriidentifier[i])
+        j=0
+        k=len(uriidentifier[i])-1
+        while(k>=j):
+
+            if(uriidentifier[i][k].isdigit()):
+              pass
+            else:
+               uriidentifier[i].pop(k)
+            k=k-1   
+    max_string=max(uriidentifier,key=len)
+    chq_no=max_string[0:6]
+    micr=max_string[6:]
+    if(len(micr)>9):
+        micr=micr[:9]
+    chq_no="".join(chq_no)
+    micr="".join(micr)    
+    print(chq_no,micr)
+    temp_amount=10
+    try:
+     temp_amount=str(words2num.w2n(amount_w))
+    except:
+        pass 
+    amount_match=False
+    if(temp_amount==amount_n.replace(" ","")):
+           amount_match=True
+    try:
+        url = "https://micr.bankifsccode.com/"+micr
+        #for i in range(1, 11):
+    
+        
+        #proxy = next(proxyPool)
+        #time.sleep(2)
+        response = requests.get(url)
+        soup=BeautifulSoup(response.content,'html.parser')
+        #print(soup)
+        
+        #print(response.text)
+        str1=soup.text
+        if(str1.find("MICR Code:-")>-1):
+            str1=str1[str1.find("MICR Code:-")+1:]
+        #print(str1)
+        if(str1.find("MICR Code:")>-1):
+            str1=str1[:str1.find("MICR Code:")]
+        #print(str1)
+        str1=str1.replace("IFSC Code: ","@@@")
+        ifsc=str1[str1.find("@@@")+3:str1.find("@@@")+14]
+        
+        print(ifsc)
+        if(len(ifsc)==0):
+         x=x/0
+    except:    
+        micr=max_string[7:]
+        if(len(micr)>9):
+            micr=micr[:9]
+        micr="".join(micr) 
+        url = "https://micr.bankifsccode.com/"+micr
+        #for i in range(1, 11):
+        
+        
+        #proxy = next(proxyPool)
+        #time.sleep(2)
+        response = requests.get(url)
+        soup=BeautifulSoup(response.content,'html.parser')
+        #print(soup)
+        
+        #print(response.text)
+        str1=soup.text
+        if(str1.find("MICR Code:-")>-1):
+            str1=str1[str1.find("MICR Code:-")+1:]
+        #print(str1)
+        if(str1.find("MICR Code:")>-1):
+            str1=str1[:str1.find("MICR Code:")]
+        #print(str1)
+        str1=str1.replace("IFSC Code: ","@@@")
+        ifsc=str1[str1.find("@@@")+3:str1.find("@@@")+14]
+        
+        print(ifsc)              
+        ################MORE STATiC CHEQUE DATA TO BE EXTRACTED 
+    
+
+    fin_list={"PAYEE":payee,"AMOUNT_IN_WORDS":amount_w,"AMOUNT_IN_NO":amount_n,"CHEQUE_NO":chq_no,"MICR":micr,"IFSC_CODE":ifsc,"AMOUNT_MATCH":amount_match}     
+    return(fin_list)                  
+def passport0_template(text_list):
+    passport_no=''
+    f_name=''
+    l_name=''
+    name=''
+    pob=''
+    dob=''
+    poi=''
+
+    for i in range(len(text_list)):
+        if(text_list[i].lower().find("passport no")>-1):
+            
+            for j in range(i+1,len(text_list)):
+                try:
+                    spano=re.search("\w\d\d\d\d\d\d\d",text_list[j]).span()
+                    passport_no=text_list[j][spano[0]:spano[1]]
+                except:
+                    pass    
+    
+    '''for i in range(len(text_list)):
+        if(text_list[i].find("REPUBLIC OF INDIA")>-1):
+            text_list=text_list[i:]
+            break''' 
+    for i in range(len(text_list)):
+        if(text_list[i].lower().find("surname")>-1):
+            l_name=text_list[i+1]
+            break
+    for i in range(len(text_list)):   
+        if(text_list[i].lower().find("given name")>-1):
+            f_name=text_list[i+1]
+    name=f_name+l_name        
+    for i in range(len(text_list)):   
+        if(text_list[i].lower().find("place of birth")>-1):
+            pob=text_list[i+1]        
+    for i in range(len(text_list)):   
+        if(text_list[i].lower().find("place of issue")>-1):
+            poi=text_list[i+1]        
+
+    fin_res={"PASSPORT_NO":passport_no,"NAME":name,"PLACE_OF_BIRTH":pob,"DOB":dob,"PLACE_OF_ISSUE":poi}
+    return(fin_res)    
+
 def aadhar_front4_template(text_list_0):
    
     #print(text_list)
@@ -761,8 +979,10 @@ def aadhar_front0_template(text_list_0):
     fin_res={"Name":name,"DOB":dob,"GENDER":gender,"Aadhar_no":aadhar_no}
 
     return(fin_res)        
-
-
+def upi0_template(text_list):
+    for i in text_list:
+        print(i)
+    return(text_list)
 def pan0_template(text_list):
     name=''
     fathers_name=''
@@ -1710,7 +1930,8 @@ def aadhar_full0_template(image_path,text_list):
     aadhar_no=''
     for i in uriidentifier:
         print(i)
-    print("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::")    
+    print("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::")
+    text_list_0=[]    
     for i in range(len(uriidentifier)):
         if(uriidentifier[i].lower().find("government of india")>-1 ):
             text_list_0=uriidentifier[i+1:]
@@ -1964,10 +2185,12 @@ def aadhar_full0_template(image_path,text_list):
    
 def make_right_code_run(image_path,text_list,final_list,results):
    try:
-    list_templates=['aadhar_back0.txt', 'aadhar_back1.txt', 'aadhar_back2.txt', 'aadhar_front0.txt', 'aadhar_front1.txt', 'aadhar_front2.txt', 'aadhar_front3.txt', 'aadhar_front4.txt', 'aadhar_full0.txt', 'aadhar_strip0.txt', 'pan0.txt', 'pan1.txt', 'pan2.txt']
+    list_templates=['upi0.txt','cheque0.txt','aadhar_back0.txt', 'aadhar_back1.txt', 'aadhar_back2.txt', 'aadhar_front0.txt', 'aadhar_front1.txt', 'aadhar_front2.txt', 'aadhar_front3.txt', 'aadhar_front4.txt', 'aadhar_full0.txt', 'aadhar_strip0.txt', 'pan0.txt', 'pan1.txt', 'pan2.txt','passport0.txt']
     #print(list_templates)
     if(results.find("aadhar_full")>-1):
         fin_res=eval(results)(image_path,final_list)
+    elif(results.find("cheque")>-1):
+         fin_res=eval(results)(image_path,final_list)   
     elif(str(list_templates).find(results.replace("_template",""))>-1):
         #print("FOUND")
         fin_res=eval(results)(text_list)        #converts the string to a function   
